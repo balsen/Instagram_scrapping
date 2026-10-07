@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Instagram Profile Extractor{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #f7f7f8; --card: #fff; --text: #18181b; --muted: #71717a;
+            --border: #e4e4e7; --accent: #111; --accent-text: #fff;
+            --error-bg: #fef2f2; --error-text: #b91c1c; --ok: #15803d;
+            --code-bg: #111; --code-text: #e4e4e7;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f0f11; --card: #18181b; --text: #f4f4f5; --muted: #a1a1aa;
+                --border: #27272a; --accent: #f4f4f5; --accent-text: #111;
+                --error-bg: #3f1d1d; --error-text: #fca5a5; --ok: #4ade80;
+                --code-bg: #09090b;
+            }
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
+            max-width: 900px; margin: 48px auto; padding: 0 16px;
+            background: var(--bg); color: var(--text); line-height: 1.5;
+        }
+        .card {
+            background: var(--card); padding: 32px; border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+        h1 { margin-top: 0; font-size: 1.6rem; }
+        .muted { color: var(--muted); }
+        form { display: flex; gap: 8px; flex-wrap: wrap; }
+        input {
+            flex: 1 1 260px; padding: 12px 14px; font-size: 16px;
+            border: 1px solid var(--border); border-radius: 8px;
+            background: var(--bg); color: var(--text);
+        }
+        button, .button {
+            padding: 12px 20px; border: 0; border-radius: 8px; font-size: 15px;
+            background: var(--accent); color: var(--accent-text); cursor: pointer;
+            text-decoration: none; display: inline-block;
+        }
+        .error {
+            margin-top: 20px; padding: 12px 14px; border-radius: 8px;
+            background: var(--error-bg); color: var(--error-text);
+        }
+        .stats { display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0; }
+        .stats div { min-width: 110px; }
+        .stats strong { display: block; font-size: 1.3rem; }
+        pre {
+            background: var(--code-bg); color: var(--code-text); padding: 20px;
+            border-radius: 10px; overflow: auto; max-height: 600px; font-size: 13px;
+        }
+        .spinner {
+            display: inline-block; width: 14px; height: 14px; margin-right: 8px;
+            border: 2px solid var(--border); border-top-color: var(--text);
+            border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: -2px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        [hidden] { display: none !important; }
+    </style>
+</head>
+<body>
+<main class="card">
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

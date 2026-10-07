@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}@{{ job.username }} · Instagram Profile Extractor{% endblock %}
+{% block content %}
+    <p><a href="{{ url_for('index') }}" class="muted">← New extraction</a></p>
+    <h1>@{{ job.username }}</h1>
+
+    <p id="status" aria-live="polite"><span class="spinner"></span>Queued…</p>
+    <div id="error" class="error" role="alert" hidden></div>
+
+    <section id="result" hidden>
+        <div class="stats">
+            <div><span class="muted">Name</span><strong id="stat-name">–</strong></div>
+            <div><span class="muted">Followers</span><strong id="stat-followers">–</strong></div>
+            <div><span class="muted">Following</span><strong id="stat-following">–</strong></div>
+            <div><span class="muted">Posts collected</span><strong id="stat-posts">–</strong></div>
+        </div>
+        <p id="partial" class="muted" hidden></p>
+        <p><a id="download" class="button" href="#">Download JSON</a></p>
+        <pre id="json"></pre>
+    </section>
+
+    <script>
+        const statusUrl = {{ url_for('job_status', job_id=job.id) | tojson }};
+        const $ = (id) => document.getElementById(id);
+        const fmt = (n) => (n === null || n === undefined) ? "–" : n.toLocaleString();
+        const started = Date.now();
+
+        function render(job) {
+            const seconds = Math.round((Date.now() - started) / 1000);
+            if (job.status === "queued" || job.status === "running") {
+                $("status").innerHTML = '<span class="spinner"></span>';
+                $("status").append(job.status === "queued"
+                    ? "Queued…"
+                    : `Scraping… ${seconds}s (scrolling the profile can take a few minutes)`);
+                return false;
+            }
+            if (job.status === "failed") {
+                $("status").textContent = "Failed";
+                $("error").textContent = job.error;
+                $("error").hidden = false;
+                return true;
+            }
+            const data = job.result;
+            $("status").textContent = "Done";
+            $("stat-name").textContent = data.full_name || "–";
+            $("stat-followers").textContent = fmt(data.followers);
+            $("stat-following").textContent = fmt(data.following);
+            $("stat-posts").textContent = data.post_count
+                ? `${fmt(data.posts.length)} / ${fmt(data.post_count)}`
+                : fmt(data.posts.length);
+            if (!data.meta.complete) {
+                $("partial").textContent = "Partial timeline: Instagram limits how far " +
+                    "logged-out visitors can scroll. Configure IG_STORAGE_STATE for full history.";
+                $("partial").hidden = false;
+            }
+            $("download").href = job.download_url;
+            $("json").textContent = JSON.stringify(data, null, 2);
+            $("result").hidden = false;
+            return true;
+        }
+
+        async function poll() {
+            try {
+                const response = await fetch(statusUrl, {cache: "no-store"});
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                if (render(await response.json())) return;
+            } catch (err) {
+                $("status").textContent = `Lost contact with the server (${err.message}), retrying…`;
+            }
+            setTimeout(poll, 2000);
+        }
+        poll();
+    </script>
+{% endblock %}

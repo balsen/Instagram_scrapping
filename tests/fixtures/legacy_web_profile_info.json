@@ -1,0 +1,113 @@
+{
+  "data": {
+    "user": {
+      "id": "1001",
+      "username": "testuser",
+      "full_name": "Test User",
+      "biography": "Coffee & code\nBerlin",
+      "is_private": false,
+      "is_verified": true,
+      "edge_followed_by": {
+        "count": 12345
+      },
+      "edge_follow": {
+        "count": 321
+      },
+      "edge_owner_to_timeline_media": {
+        "count": 4,
+        "page_info": {
+          "has_next_page": true,
+          "end_cursor": "abc"
+        },
+        "edges": [
+          {
+            "node": {
+              "__typename": "GraphImage",
+              "id": "9001",
+              "shortcode": "AAA111",
+              "display_url": "https://cdn.example/aaa.jpg",
+              "is_video": false,
+              "taken_at_timestamp": 1759320000,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "First post"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 100
+              },
+              "edge_media_preview_like": {
+                "count": 100
+              },
+              "edge_media_to_comment": {
+                "count": 5
+              },
+              "owner": {
+                "id": "1001",
+                "username": "testuser"
+              }
+            }
+          },
+          {
+            "node": {
+              "__typename": "GraphSidecar",
+              "id": "9002",
+              "shortcode": "BBB222",
+              "display_url": "https://cdn.example/bbb-cover.jpg",
+              "is_video": false,
+              "taken_at_timestamp": 1759230000,
+              "edge_media_to_caption": {
+                "edges": []
+              },
+              "edge_media_preview_like": {
+                "count": 50
+              },
+              "edge_media_to_comment": {
+                "count": 0
+              },
+              "owner": {
+                "id": "1001",
+                "username": "testuser"
+              },
+              "edge_sidecar_to_children": {
+                "edges": [
+                  {
+                    "node": {
+                      "__typename": "GraphVideo",
+                      "id": "9100",
+                      "shortcode": "BBB222c1",
+                      "display_url": "https://cdn.example/bbb-1.jpg",
+                      "is_video": true
+                    }
+                  },
+                  {
+                    "node": {
+                      "__typename": "GraphImage",
+                      "id": "9101",
+                      "shortcode": "BBB222c2",
+                      "display_url": "https://cdn.example/bbb-2.jpg",
+                      "is_video": false
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "edge_felix_video_timeline": {
+        "count": 0,
+        "page_info": {
+          "has_next_page": false,
+          "end_cursor": null
+        },
+        "edges": []
+      }
+    }
+  },
+  "status": "ok"
+}

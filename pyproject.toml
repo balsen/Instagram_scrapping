@@ -1,0 +1,11 @@
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF012"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: drives a real Chromium against a local fake Instagram"]

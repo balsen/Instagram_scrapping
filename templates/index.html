@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Instagram Profile Extractor</h1>
+    <p class="muted">Enter a public Instagram username, @handle or profile URL.</p>
+
+    <form method="POST" action="{{ url_for('create_job') }}">
+        <input name="username" placeholder="@username" value="{{ username or '' }}"
+               required autofocus autocomplete="off" spellcheck="false">
+        <button type="submit">Extract</button>
+    </form>
+
+    {% if error %}
+        <div class="error" role="alert">{{ error }}</div>
+    {% endif %}
+{% endblock %}

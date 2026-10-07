@@ -1,0 +1,210 @@
+from __future__ import annotations
+
+from collections import defaultdict
+from typing import Any
+
+from .kpis import (
+    CaseRun,
+    Kpi,
+    completeness,
+    ratio,
+    visible_post_target,
+)
+
+STATUS = {True: "✅ Pass", False: "❌ Fail", None: "–"}
+OUTCOME_LABELS = {
+    "ok": "scraped",
+    "not_found": "not found",
+    "invalid": "rejected as invalid",
+    "blocked": "blocked",
+    "rate_limited": "rate limited",
+    "error": "error",
+}
+
+
+def _pct(value: float | None) -> str:
+    return "n/a" if value is None else f"{value * 100:.0f}%"
+
+
+def _scorecard(kpis: list[Kpi]) -> list[str]:
+    lines = ["| Category | KPI | Result | Target | Status |", "|---|---|---|---|---|"]
+    lines += [
+        f"| {k.category} | {k.name} | **{k.display}** | {k.target} | {STATUS[k.passed]} |"
+        for k in kpis
+    ]
+    return lines
+
+
+def _profiles(runs: list[CaseRun]) -> list[str]:
+    lines = [
+        "| Profile | Outcome | Posts | Visible coverage | Completeness | Accuracy "
+        "| Media valid | Latency | Requests | Data |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for run in runs:
+        if run.expected != "ok":
+            continue
+        if not run.succeeded:
+            lines.append(
+                f"| @{run.username} | {OUTCOME_LABELS.get(run.outcome, run.outcome)} "
+                f"| – | – | – | – | – | {run.wall_seconds:.1f} s | – | – |"
+            )
+            continue
+        result = run.result
+        stats = result["meta"]["stats"]
+        filled, required = completeness(result)
+        checks = [ok for values in run.checks.values() for ok in values]
+        posts = len(result["posts"])
+        lines.append(
+            f"| @{run.username} | scraped | {posts} "
+            f"| {_pct(ratio(posts, visible_post_target(result)))} "
+            f"| {_pct(ratio(filled, required))} "
+            f"| {_pct(ratio(sum(checks), len(checks)))} ({sum(checks)}/{len(checks)}) "
+            f"| {sum(run.media)}/{len(run.media)} "
+            f"| {run.wall_seconds:.1f} s | {stats['requests']} "
+            f"| {stats['bytes_received'] / 1_000_000:.1f} MB |"
+        )
+    return lines
+
+
+def _accuracy(runs: list[CaseRun]) -> list[str]:
+    totals: dict[str, list[bool]] = defaultdict(list)
+    for run in runs:
+        for name, values in run.checks.items():
+            totals[name] += values
+    lines = ["| Field | Checked | Matched | Accuracy |", "|---|---|---|---|"]
+    for name in sorted(totals):
+        values = totals[name]
+        rate = _pct(ratio(sum(values), len(values)))
+        lines.append(f"| `{name}` | {len(values)} | {sum(values)} | {rate} |")
+    return lines
+
+
+def _clip(value: object, limit: int = 40) -> str:
+    text = " ".join(str(value).split()).replace("|", "\\|")
+    return text if len(text) <= limit else text[: limit - 1] + "…"
+
+
+def _mismatches(runs: list[CaseRun]) -> list[str]:
+    rows = [
+        f"| @{run.username} | {m['subject']} | `{m['field']}` "
+        f"| {_clip(m['scraped'])} | {_clip(m['reference'])} |"
+        for run in runs
+        for m in run.mismatches
+    ]
+    if not rows:
+        return ["No mismatches."]
+    return [
+        "| Profile | Subject | Field | Scraped (JSON) | Reference (SEO metadata) |",
+        "|---|---|---|---|---|",
+        *rows,
+    ]
+
+
+def _errors(runs: list[CaseRun]) -> list[str]:
+    lines = ["| Input | Expected | Outcome | Status |", "|---|---|---|---|"]
+    for run in runs:
+        if run.expected == "ok":
+            continue
+        lines.append(
+            f"| `{run.username}` | {OUTCOME_LABELS[run.expected]} "
+            f"| {OUTCOME_LABELS.get(run.outcome, run.outcome)} "
+            f"| {STATUS[run.outcome == run.expected]} |"
+        )
+    return lines
+
+
+def _failures(runs: list[CaseRun]) -> list[str]:
+    lines = []
+    for run in runs:
+        for message in run.schema_errors[:3]:
+            lines.append(f"- @{run.username} schema: {message}")
+        if run.error and run.outcome != run.expected:
+            lines.append(f"- @{run.username}: {run.error}")
+    return lines
+
+
+def render(kpis: list[Kpi], runs: list[CaseRun], environment: dict[str, Any]) -> str:
+    gated = [k for k in kpis if k.passed is not None]
+    passed = sum(k.passed for k in gated)
+    profiles = sum(run.expected == "ok" for run in runs)
+    negatives = len(runs) - profiles
+    failures = _failures(runs)
+
+    sections = [
+        "# Benchmark report",
+        "",
+        f"**{passed}/{len(gated)} KPIs met their target.** "
+        f"{profiles} live profiles and {negatives} error cases, run on {environment['date']} "
+        f"in a {environment['session']} session.",
+        "",
+        f"Environment: Python {environment['python']}, Playwright {environment['playwright']}, "
+        f"{environment['platform']}. Accuracy sample: {environment['accuracy_sample']} posts "
+        f"per profile. Generated by `python -m benchmark`.",
+        "",
+        "## KPI scorecard",
+        "",
+        *_scorecard(kpis),
+        "",
+        "## Per-profile results",
+        "",
+        *_profiles(runs),
+        "",
+        "## Accuracy by field",
+        "",
+        "Each value is compared with the same field in Instagram's server-rendered SEO "
+        "metadata (`og:title`, `og:description`, `description`). That is a separate channel "
+        "from the JSON payloads the scraper parses.",
+        "",
+        *_accuracy(runs),
+        "",
+        "### Mismatches",
+        "",
+        "Every failed check, with both values, so each one can be judged on its merits.",
+        "",
+        *_mismatches(runs),
+        "",
+        "## Error handling",
+        "",
+        *_errors(runs),
+        "",
+    ]
+    if failures:
+        sections += ["## Failures", "", *failures, ""]
+    sections += [
+        "## Methodology",
+        "",
+        "- **Success rate:** profiles that returned a result divided by profiles attempted. "
+        "**Block rate:** login walls and HTTP 429 responses divided by all live attempts. "
+        "**Error classification:** the error cases must fail with the right error type.",
+        "- **Schema conformance:** every output is validated against "
+        "`schema/output.schema.json` (JSON Schema 2020-12, with format checks).",
+        "- **Field completeness:** the share of the brief's required fields that are filled. "
+        "For profiles: full name, followers, following and bio. For each post: ID, shortcode, "
+        "timestamp, caption, likes, comments, and an image URL or video thumbnail.",
+        "- **Accuracy:** a fresh browser session reads each profile page and the newest "
+        f"{environment['accuracy_sample']} post pages. A count matches when it is within the "
+        "displayed rounding (for example, `21K` means ±1,000), or within 3% to allow for drift "
+        "between the two reads. A date matches within ±1 day (the time zone the page renders "
+        "in is unknown). Text matches when the first 40 characters agree, ignoring whitespace. "
+        "Fields Instagram doesn't display, such as hidden like counts, are not counted.",
+        "- **Media URL validity:** every `image_url` and `video_thumbnail` is requested from "
+        "the CDN, and must return HTTP 200 or 206 with an `image/*` content type.",
+        "- **Coverage:** posts collected divided by the posts Instagram exposes to the session. "
+        "Logged out, that is the newest 12; with a session, it is the full timeline. Full "
+        "timeline coverage is reported for reference.",
+        "- **Latency** is wall-clock time per profile, including the post-page enrichment. "
+        "**Throughput** is posts per minute of scraping. **Data transferred** is response "
+        "headers plus bodies, as measured by the browser.",
+        "",
+        "## Reproduce",
+        "",
+        "```bash",
+        "pip install -r requirements-dev.txt",
+        "python -m benchmark                       # default profile set",
+        "python -m benchmark --profiles natgeo nasa --accuracy-sample 3",
+        "python -m benchmark --strict              # exit 1 if any KPI misses its target",
+        "```",
+        "",
+    ]
+    return "\n".join(sections)

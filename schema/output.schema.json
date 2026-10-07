@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/instagram-playwright-scraper/schema/output.schema.json",
+  "title": "Instagram profile export",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "username",
+    "user_id",
+    "full_name",
+    "bio",
+    "followers",
+    "following",
+    "post_count",
+    "is_private",
+    "is_verified",
+    "posts",
+    "meta"
+  ],
+  "properties": {
+    "username": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._]{1,30}$"
+    },
+    "user_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "full_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "bio": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "followers": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "following": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "post_count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "is_private": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "is_verified": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "posts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/post"
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "scraped_at",
+        "posts_collected",
+        "complete",
+        "authenticated",
+        "stats"
+      ],
+      "properties": {
+        "scraped_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "posts_collected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "authenticated": {
+          "type": "boolean"
+        },
+        "stats": {
+          "type": "object",
+          "required": [
+            "duration_seconds",
+            "requests",
+            "failed_requests",
+            "blocked_requests",
+            "bytes_received",
+            "payloads_parsed",
+            "detail_pages",
+            "navigation_retries"
+          ],
+          "properties": {
+            "duration_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "requests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed_requests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "blocked_requests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes_received": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "payloads_parsed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "detail_pages": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "navigation_retries": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "post": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "shortcode",
+        "url",
+        "media_type",
+        "timestamp",
+        "caption",
+        "likes",
+        "comments",
+        "image_url",
+        "video_thumbnail"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+$"
+        },
+        "shortcode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "media_type": {
+          "enum": [
+            "image",
+            "video",
+            "carousel"
+          ]
+        },
+        "timestamp": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "likes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "comments": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "image_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "video_thumbnail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    }
+  }
+}

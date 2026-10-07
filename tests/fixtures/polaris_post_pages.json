@@ -1,0 +1,371 @@
+{
+  "EEE555": {
+    "require": [
+      [
+        "ScheduledServerJS",
+        "handle",
+        null,
+        [
+          {
+            "__bbox": {
+              "require": [
+                [
+                  "RelayPrefetchedStreamCache",
+                  "next",
+                  [],
+                  [
+                    "adp_PolarisQueryRelayPreloader_1",
+                    {
+                      "__bbox": {
+                        "complete": true,
+                        "result": {
+                          "data": {
+                            "xig_polaris_media": {
+                              "if_not_gated_logged_out": {
+                                "__typename": "XIGPolarisImageMedia",
+                                "__isXIGPolarisMedia": "XIGPolarisImageMedia",
+                                "pk": "9005",
+                                "code": "EEE555",
+                                "accessibility_caption": "Photo by Test User.",
+                                "caption": {
+                                  "text": "Grid image"
+                                },
+                                "media_type": 1,
+                                "user": {
+                                  "pk": "1001",
+                                  "username": "testuser",
+                                  "id": "17841400000001001"
+                                },
+                                "id": "POLARIS_9005",
+                                "taken_at": 1759400000,
+                                "like_count": 77,
+                                "comment_count": 3,
+                                "like_and_view_counts_disabled": false,
+                                "display_uri": "https://cdn.example/eee555-640.jpg",
+                                "image_versions2": {
+                                  "candidates": [
+                                    {
+                                      "url": "https://cdn.example/eee555-640.jpg",
+                                      "width": 640,
+                                      "height": 640
+                                    },
+                                    {
+                                      "url": "https://cdn.example/eee555-full.jpg",
+                                      "width": 1440,
+                                      "height": 1440
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "xig_related_media": {
+                              "edges": [
+                                {
+                                  "node": {
+                                    "__typename": "XIGPolarisImageMedia",
+                                    "__isXIGPolarisMedia": "XIGPolarisImageMedia",
+                                    "pk": "9888",
+                                    "code": "HHH888",
+                                    "accessibility_caption": "Photo by Test User.",
+                                    "caption": {
+                                      "text": "Related post"
+                                    },
+                                    "media_type": 1,
+                                    "user": {
+                                      "pk": "3003",
+                                      "username": "neighbour"
+                                    },
+                                    "id": "POLARIS_9888",
+                                    "taken_at": 1759000000,
+                                    "like_count": 9,
+                                    "comment_count": 0,
+                                    "like_and_view_counts_disabled": false,
+                                    "display_uri": "https://cdn.example/hhh888-640.jpg",
+                                    "image_versions2": {
+                                      "candidates": [
+                                        {
+                                          "url": "https://cdn.example/hhh888-640.jpg",
+                                          "width": 640,
+                                          "height": 640
+                                        },
+                                        {
+                                          "url": "https://cdn.example/hhh888-full.jpg",
+                                          "width": 1440,
+                                          "height": 1440
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    ]
+  },
+  "FFF666": {
+    "require": [
+      [
+        "ScheduledServerJS",
+        "handle",
+        null,
+        [
+          {
+            "__bbox": {
+              "require": [
+                [
+                  "RelayPrefetchedStreamCache",
+                  "next",
+                  [],
+                  [
+                    "adp_PolarisQueryRelayPreloader_1",
+                    {
+                      "__bbox": {
+                        "complete": true,
+                        "result": {
+                          "data": {
+                            "xig_polaris_media": {
+                              "if_not_gated_logged_out": {
+                                "__typename": "XIGPolarisVideoMedia",
+                                "__isXIGPolarisMedia": "XIGPolarisVideoMedia",
+                                "pk": "9006",
+                                "code": "FFF666",
+                                "accessibility_caption": "Photo by Test User.",
+                                "caption": {
+                                  "text": "Grid reel"
+                                },
+                                "media_type": 2,
+                                "user": {
+                                  "pk": "1001",
+                                  "username": "testuser",
+                                  "id": "17841400000001001"
+                                },
+                                "id": "POLARIS_9006",
+                                "taken_at": 1759390000,
+                                "like_count": 500,
+                                "comment_count": 12,
+                                "like_and_view_counts_disabled": false,
+                                "display_uri": "https://cdn.example/fff666-640.jpg",
+                                "image_versions2": {
+                                  "candidates": [
+                                    {
+                                      "url": "https://cdn.example/fff666-640.jpg",
+                                      "width": 640,
+                                      "height": 640
+                                    },
+                                    {
+                                      "url": "https://cdn.example/fff666-full.jpg",
+                                      "width": 1440,
+                                      "height": 1440
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "xig_related_media": {
+                              "edges": [
+                                {
+                                  "node": {
+                                    "__typename": "XIGPolarisImageMedia",
+                                    "__isXIGPolarisMedia": "XIGPolarisImageMedia",
+                                    "pk": "9888",
+                                    "code": "HHH888",
+                                    "accessibility_caption": "Photo by Test User.",
+                                    "caption": {
+                                      "text": "Related post"
+                                    },
+                                    "media_type": 1,
+                                    "user": {
+                                      "pk": "3003",
+                                      "username": "neighbour"
+                                    },
+                                    "id": "POLARIS_9888",
+                                    "taken_at": 1759000000,
+                                    "like_count": 9,
+                                    "comment_count": 0,
+                                    "like_and_view_counts_disabled": false,
+                                    "display_uri": "https://cdn.example/hhh888-640.jpg",
+                                    "image_versions2": {
+                                      "candidates": [
+                                        {
+                                          "url": "https://cdn.example/hhh888-640.jpg",
+                                          "width": 640,
+                                          "height": 640
+                                        },
+                                        {
+                                          "url": "https://cdn.example/hhh888-full.jpg",
+                                          "width": 1440,
+                                          "height": 1440
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    ]
+  },
+  "GGG777": {
+    "require": [
+      [
+        "ScheduledServerJS",
+        "handle",
+        null,
+        [
+          {
+            "__bbox": {
+              "require": [
+                [
+                  "RelayPrefetchedStreamCache",
+                  "next",
+                  [],
+                  [
+                    "adp_PolarisQueryRelayPreloader_1",
+                    {
+                      "__bbox": {
+                        "complete": true,
+                        "result": {
+                          "data": {
+                            "xig_polaris_media": {
+                              "if_not_gated_logged_out": {
+                                "__typename": "XIGPolarisCarouselMedia",
+                                "__isXIGPolarisMedia": "XIGPolarisCarouselMedia",
+                                "pk": "9007",
+                                "code": "GGG777",
+                                "accessibility_caption": "Photo by Test User.",
+                                "caption": {
+                                  "text": "Grid carousel"
+                                },
+                                "media_type": 8,
+                                "user": {
+                                  "pk": "1001",
+                                  "username": "testuser",
+                                  "id": "17841400000001001"
+                                },
+                                "id": "POLARIS_9007",
+                                "taken_at": 1759380000,
+                                "like_count": 0,
+                                "comment_count": 4,
+                                "like_and_view_counts_disabled": true,
+                                "display_uri": "https://cdn.example/ggg777-640.jpg",
+                                "image_versions2": {
+                                  "candidates": [
+                                    {
+                                      "url": "https://cdn.example/ggg777-640.jpg",
+                                      "width": 640,
+                                      "height": 640
+                                    },
+                                    {
+                                      "url": "https://cdn.example/ggg777-full.jpg",
+                                      "width": 1440,
+                                      "height": 1440
+                                    }
+                                  ]
+                                },
+                                "carousel_media": [
+                                  {
+                                    "pk": "9300",
+                                    "id": "9300_1001",
+                                    "media_type": 2,
+                                    "image_versions2": {
+                                      "candidates": [
+                                        {
+                                          "url": "https://cdn.example/ggg777-child1.jpg",
+                                          "width": 1080,
+                                          "height": 1920
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "pk": "9301",
+                                    "id": "9301_1001",
+                                    "media_type": 1,
+                                    "image_versions2": {
+                                      "candidates": [
+                                        {
+                                          "url": "https://cdn.example/ggg777-child2.jpg",
+                                          "width": 1080,
+                                          "height": 1080
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "xig_related_media": {
+                              "edges": [
+                                {
+                                  "node": {
+                                    "__typename": "XIGPolarisImageMedia",
+                                    "__isXIGPolarisMedia": "XIGPolarisImageMedia",
+                                    "pk": "9888",
+                                    "code": "HHH888",
+                                    "accessibility_caption": "Photo by Test User.",
+                                    "caption": {
+                                      "text": "Related post"
+                                    },
+                                    "media_type": 1,
+                                    "user": {
+                                      "pk": "3003",
+                                      "username": "neighbour"
+                                    },
+                                    "id": "POLARIS_9888",
+                                    "taken_at": 1759000000,
+                                    "like_count": 9,
+                                    "comment_count": 0,
+                                    "like_and_view_counts_disabled": false,
+                                    "display_uri": "https://cdn.example/hhh888-640.jpg",
+                                    "image_versions2": {
+                                      "candidates": [
+                                        {
+                                          "url": "https://cdn.example/hhh888-640.jpg",
+                                          "width": 640,
+                                          "height": 640
+                                        },
+                                        {
+                                          "url": "https://cdn.example/hhh888-full.jpg",
+                                          "width": 1440,
+                                          "height": 1440
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    ]
+  }
+}

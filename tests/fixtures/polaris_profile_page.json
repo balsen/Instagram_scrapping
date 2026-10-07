@@ -1,0 +1,158 @@
+[
+  {
+    "require": [
+      [
+        "ScheduledServerJS",
+        "handle",
+        null,
+        [
+          {
+            "__bbox": {
+              "require": [
+                [
+                  "RelayPrefetchedStreamCache",
+                  "next",
+                  [],
+                  [
+                    "adp_PolarisQueryRelayPreloader_1",
+                    {
+                      "__bbox": {
+                        "complete": true,
+                        "result": {
+                          "data": {
+                            "xig_user_by_username": {
+                              "pk": "1001",
+                              "username": "testuser",
+                              "is_private": false,
+                              "biography": "Coffee & code\nBerlin",
+                              "full_name": "Test User",
+                              "is_verified": true,
+                              "follower_count": 12345,
+                              "following_count": 321,
+                              "all_media_count": null,
+                              "id": "17841400000001001"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    ]
+  },
+  {
+    "require": [
+      [
+        "ScheduledServerJS",
+        "handle",
+        null,
+        [
+          {
+            "__bbox": {
+              "require": [
+                [
+                  "RelayPrefetchedStreamCache",
+                  "next",
+                  [],
+                  [
+                    "adp_PolarisQueryRelayPreloader_1",
+                    {
+                      "__bbox": {
+                        "complete": true,
+                        "result": {
+                          "data": {
+                            "xig_user_by_username": {
+                              "pk": "1001",
+                              "id": "17841400000001001",
+                              "polaris_ordered_timeline_connection": {
+                                "edges": [
+                                  {
+                                    "node": {
+                                      "__typename": "XIGPolarisImageMedia",
+                                      "__isXIGPolarisMedia": "XIGPolarisImageMedia",
+                                      "pk": "9005",
+                                      "code": "EEE555",
+                                      "accessibility_caption": "Photo by Test User.",
+                                      "caption": {
+                                        "text": "Grid image"
+                                      },
+                                      "display_uri": "https://cdn.example/eee555-640.jpg",
+                                      "media_type": 1,
+                                      "user": {
+                                        "pk": "1001",
+                                        "username": "testuser",
+                                        "id": "17841400000001001"
+                                      },
+                                      "id": "POLARIS_9005",
+                                      "product_type": "feed"
+                                    }
+                                  },
+                                  {
+                                    "node": {
+                                      "__typename": "XIGPolarisVideoMedia",
+                                      "__isXIGPolarisMedia": "XIGPolarisVideoMedia",
+                                      "pk": "9006",
+                                      "code": "FFF666",
+                                      "accessibility_caption": "Photo by Test User.",
+                                      "caption": {
+                                        "text": "Grid reel"
+                                      },
+                                      "display_uri": "https://cdn.example/fff666-640.jpg",
+                                      "media_type": 2,
+                                      "user": {
+                                        "pk": "1001",
+                                        "username": "testuser",
+                                        "id": "17841400000001001"
+                                      },
+                                      "id": "POLARIS_9006",
+                                      "product_type": "clips"
+                                    }
+                                  },
+                                  {
+                                    "node": {
+                                      "__typename": "XIGPolarisCarouselMedia",
+                                      "__isXIGPolarisMedia": "XIGPolarisCarouselMedia",
+                                      "pk": "9007",
+                                      "code": "GGG777",
+                                      "accessibility_caption": "Photo by Test User.",
+                                      "caption": {
+                                        "text": "Grid carousel"
+                                      },
+                                      "display_uri": "https://cdn.example/ggg777-640.jpg",
+                                      "media_type": 8,
+                                      "user": {
+                                        "pk": "1001",
+                                        "username": "testuser",
+                                        "id": "17841400000001001"
+                                      },
+                                      "id": "POLARIS_9007",
+                                      "product_type": "carousel_container",
+                                      "carousel_media_count": 2
+                                    }
+                                  }
+                                ],
+                                "page_info": {
+                                  "has_next_page": true,
+                                  "end_cursor": "cursor-1"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    ]
+  }
+]

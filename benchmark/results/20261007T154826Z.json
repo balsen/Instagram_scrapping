@@ -1,0 +1,583 @@
+{
+  "environment": {
+    "date": "2026-10-07 15:48 UTC",
+    "session": "logged-out",
+    "python": "3.14.7",
+    "playwright": "1.63.0",
+    "platform": "Darwin arm64",
+    "accuracy_sample": 5
+  },
+  "kpis": [
+    {
+      "category": "Reliability",
+      "name": "Success rate",
+      "value": 1.0,
+      "display": "100.0%",
+      "target": "\u2265 95%",
+      "passed": true
+    },
+    {
+      "category": "Reliability",
+      "name": "Block / rate-limit rate",
+      "value": 0.0,
+      "display": "0.0%",
+      "target": "\u2264 5%",
+      "passed": true
+    },
+    {
+      "category": "Reliability",
+      "name": "Error classification accuracy",
+      "value": 1.0,
+      "display": "100.0%",
+      "target": "100%",
+      "passed": true
+    },
+    {
+      "category": "Reliability",
+      "name": "Navigation retries per profile",
+      "value": 0.0,
+      "display": "0.00",
+      "target": "\u2264 1",
+      "passed": true
+    },
+    {
+      "category": "Data quality",
+      "name": "Schema conformance",
+      "value": 1.0,
+      "display": "100.0%",
+      "target": "100%",
+      "passed": true
+    },
+    {
+      "category": "Data quality",
+      "name": "Field completeness (fill rate)",
+      "value": 1.0,
+      "display": "100.0%",
+      "target": "\u2265 98%",
+      "passed": true
+    },
+    {
+      "category": "Data quality",
+      "name": "Accuracy vs. independent source",
+      "value": 0.9919354838709677,
+      "display": "99.2%",
+      "target": "\u2265 95%",
+      "passed": true
+    },
+    {
+      "category": "Data quality",
+      "name": "Media URL validity",
+      "value": 1.0,
+      "display": "100.0%",
+      "target": "\u2265 98%",
+      "passed": true
+    },
+    {
+      "category": "Data quality",
+      "name": "Duplicate rate",
+      "value": 0.0,
+      "display": "0.0%",
+      "target": "0%",
+      "passed": true
+    },
+    {
+      "category": "Coverage",
+      "name": "Coverage of posts visible to the session",
+      "value": 1.0,
+      "display": "100.0%",
+      "target": "\u2265 95%",
+      "passed": true
+    },
+    {
+      "category": "Coverage",
+      "name": "Coverage of full timeline",
+      "value": 0.0011679286784887003,
+      "display": "0.1%",
+      "target": "\u2013",
+      "passed": null
+    },
+    {
+      "category": "Performance",
+      "name": "Latency per profile, p50",
+      "value": 17.6395059999777,
+      "display": "17.6 s",
+      "target": "\u2013",
+      "passed": null
+    },
+    {
+      "category": "Performance",
+      "name": "Latency per profile, p95",
+      "value": 18.757458866387605,
+      "display": "18.8 s",
+      "target": "\u2264 60 s",
+      "passed": true
+    },
+    {
+      "category": "Performance",
+      "name": "Throughput",
+      "value": 40.69700624614553,
+      "display": "40.7 posts/min",
+      "target": "\u2265 20 posts/min",
+      "passed": true
+    },
+    {
+      "category": "Efficiency",
+      "name": "Requests per profile",
+      "value": 83.8,
+      "display": "84",
+      "target": "\u2013",
+      "passed": null
+    },
+    {
+      "category": "Efficiency",
+      "name": "Data transferred per profile",
+      "value": 7.5099596,
+      "display": "7.5 MB",
+      "target": "\u2264 25 MB",
+      "passed": true
+    },
+    {
+      "category": "Efficiency",
+      "name": "Data transferred per 1,000 posts",
+      "value": 625.8299666666667,
+      "display": "626 MB",
+      "target": "\u2013",
+      "passed": null
+    },
+    {
+      "category": "Efficiency",
+      "name": "Heavy requests avoided (images, video, fonts)",
+      "value": 0.7777188328912467,
+      "display": "77.8%",
+      "target": "\u2013",
+      "passed": null
+    }
+  ],
+  "cases": [
+    {
+      "username": "natgeo",
+      "expected": "ok",
+      "outcome": "ok",
+      "wall_seconds": 17.05,
+      "error": null,
+      "posts": 12,
+      "stats": {
+        "duration_seconds": 17.05,
+        "requests": 81,
+        "failed_requests": 0,
+        "blocked_requests": 273,
+        "bytes_received": 7501248,
+        "payloads_parsed": 34,
+        "detail_pages": 12,
+        "navigation_retries": 0
+      },
+      "schema_errors": [],
+      "accuracy_checks": {
+        "profile.full_name": [
+          true
+        ],
+        "profile.followers": [
+          true
+        ],
+        "profile.following": [
+          true
+        ],
+        "profile.post_count": [
+          true
+        ],
+        "profile.bio": [
+          true
+        ],
+        "post.likes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.comments": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.date": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.caption": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "mismatches": [],
+      "media_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "username": "nasa",
+      "expected": "ok",
+      "outcome": "ok",
+      "wall_seconds": 17.64,
+      "error": null,
+      "posts": 12,
+      "stats": {
+        "duration_seconds": 17.64,
+        "requests": 83,
+        "failed_requests": 0,
+        "blocked_requests": 356,
+        "bytes_received": 7578664,
+        "payloads_parsed": 34,
+        "detail_pages": 12,
+        "navigation_retries": 0
+      },
+      "schema_errors": [],
+      "accuracy_checks": {
+        "profile.full_name": [
+          true
+        ],
+        "profile.followers": [
+          true
+        ],
+        "profile.following": [
+          false
+        ],
+        "profile.post_count": [
+          true
+        ],
+        "profile.bio": [
+          true
+        ],
+        "post.likes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.comments": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.date": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.caption": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "mismatches": [
+        {
+          "subject": "profile",
+          "field": "profile.following",
+          "scraped": 90,
+          "reference": "94"
+        }
+      ],
+      "media_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "username": "instagram",
+      "expected": "ok",
+      "outcome": "ok",
+      "wall_seconds": 18.97,
+      "error": null,
+      "posts": 12,
+      "stats": {
+        "duration_seconds": 18.97,
+        "requests": 84,
+        "failed_requests": 0,
+        "blocked_requests": 251,
+        "bytes_received": 7503837,
+        "payloads_parsed": 45,
+        "detail_pages": 12,
+        "navigation_retries": 0
+      },
+      "schema_errors": [],
+      "accuracy_checks": {
+        "profile.full_name": [
+          true
+        ],
+        "profile.followers": [
+          true
+        ],
+        "profile.following": [
+          true
+        ],
+        "profile.post_count": [
+          true
+        ],
+        "profile.bio": [
+          true
+        ],
+        "post.likes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.comments": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.date": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.caption": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "mismatches": [],
+      "media_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "username": "nike",
+      "expected": "ok",
+      "outcome": "ok",
+      "wall_seconds": 17.92,
+      "error": null,
+      "posts": 12,
+      "stats": {
+        "duration_seconds": 17.92,
+        "requests": 81,
+        "failed_requests": 0,
+        "blocked_requests": 298,
+        "bytes_received": 7505362,
+        "payloads_parsed": 34,
+        "detail_pages": 12,
+        "navigation_retries": 0
+      },
+      "schema_errors": [],
+      "accuracy_checks": {
+        "profile.full_name": [
+          true
+        ],
+        "profile.followers": [
+          true
+        ],
+        "profile.following": [
+          true
+        ],
+        "profile.post_count": [
+          true
+        ],
+        "profile.bio": [
+          true
+        ],
+        "post.likes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.comments": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.date": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.caption": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "mismatches": [],
+      "media_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "username": "cristiano",
+      "expected": "ok",
+      "outcome": "ok",
+      "wall_seconds": 16.88,
+      "error": null,
+      "posts": 12,
+      "stats": {
+        "duration_seconds": 16.88,
+        "requests": 90,
+        "failed_requests": 0,
+        "blocked_requests": 288,
+        "bytes_received": 7460687,
+        "payloads_parsed": 34,
+        "detail_pages": 12,
+        "navigation_retries": 0
+      },
+      "schema_errors": [],
+      "accuracy_checks": {
+        "profile.full_name": [
+          true
+        ],
+        "profile.followers": [
+          true
+        ],
+        "profile.following": [
+          true
+        ],
+        "profile.post_count": [
+          true
+        ],
+        "post.likes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.comments": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.date": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "post.caption": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "mismatches": [],
+      "media_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "username": "thisuserdoesnotexist_zq_98761",
+      "expected": "not_found",
+      "outcome": "not_found",
+      "wall_seconds": 2.39,
+      "error": "Instagram profile @thisuserdoesnotexist_zq_98761 not found.",
+      "posts": null,
+      "stats": null,
+      "schema_errors": [],
+      "accuracy_checks": {},
+      "mismatches": [],
+      "media_checks": []
+    },
+    {
+      "username": "bad name",
+      "expected": "invalid",
+      "outcome": "invalid",
+      "wall_seconds": 0.0,
+      "error": "Invalid Instagram username: use 1-30 letters, numbers, periods or underscores.",
+      "posts": null,
+      "stats": null,
+      "schema_errors": [],
+      "accuracy_checks": {},
+      "mismatches": [],
+      "media_checks": []
+    }
+  ]
+}
