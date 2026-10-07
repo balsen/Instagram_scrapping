@@ -158,7 +158,9 @@ def main(argv: list[str] | None = None) -> int:
             for run in runs
         ],
     }
-    (args.results_dir / f"{stamp}.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (args.results_dir / f"{stamp}.json").write_text(
+        json.dumps(summary, indent=2, default=str) + "\n"
+    )
     args.report.write_text(render(kpis, runs, environment))
 
     gated = [kpi for kpi in kpis if kpi.passed is not None]

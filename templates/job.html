@@ -23,10 +23,8 @@
         const statusUrl = {{ url_for('job_status', job_id=job.id) | tojson }};
         const $ = (id) => document.getElementById(id);
         const fmt = (n) => (n === null || n === undefined) ? "–" : n.toLocaleString();
-        const started = Date.now();
-
         function render(job) {
-            const seconds = Math.round((Date.now() - started) / 1000);
+            const seconds = Math.max(0, Math.round((Date.now() - Date.parse(job.created_at)) / 1000));
             if (job.status === "queued" || job.status === "running") {
                 $("status").innerHTML = '<span class="spinner"></span>';
                 $("status").append(job.status === "queued"
@@ -49,8 +47,10 @@
                 ? `${fmt(data.posts.length)} / ${fmt(data.post_count)}`
                 : fmt(data.posts.length);
             if (!data.meta.complete) {
-                $("partial").textContent = "Partial timeline: Instagram limits how far " +
-                    "logged-out visitors can scroll. Configure IG_STORAGE_STATE for full history.";
+                $("partial").textContent = data.meta.authenticated
+                    ? "Partial timeline: Instagram stopped serving more posts to this session."
+                    : "Partial timeline: Instagram shows logged-out visitors only the newest " +
+                      "posts. Configure IG_STORAGE_STATE for the full history.";
                 $("partial").hidden = false;
             }
             $("download").href = job.download_url;
@@ -62,6 +62,10 @@
         async function poll() {
             try {
                 const response = await fetch(statusUrl, {cache: "no-store"});
+                if (response.status === 404) {
+                    $("status").textContent = "This job has expired. Start a new extraction.";
+                    return;
+                }
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 if (render(await response.json())) return;
             } catch (err) {

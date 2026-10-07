@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import math
 import re
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any
@@ -158,12 +157,40 @@ def _pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value * 100:.1f}%"
 
 
-def _at_least(value: float | None, target: float) -> bool | None:
-    return None if value is None else value >= target
+TARGETS: dict[str, tuple[str, float, str]] = {
+    "Success rate": (">=", 0.95, "≥ 95%"),
+    "Block / rate-limit rate": ("<=", 0.05, "≤ 5%"),
+    "Error classification accuracy": (">=", 1.0, "100%"),
+    "Navigation retries per profile": ("<=", 1, "≤ 1"),
+    "Schema conformance": (">=", 1.0, "100%"),
+    "Field completeness (fill rate)": (">=", 0.98, "≥ 98%"),
+    "Accuracy vs. independent source": (">=", 0.95, "≥ 95%"),
+    "Media URL validity": (">=", 0.98, "≥ 98%"),
+    "Duplicate rate": ("<=", 0, "0%"),
+    "Coverage of posts visible to the session": (">=", 0.95, "≥ 95%"),
+    "Latency per profile, p95": ("<=", 60, "≤ 60 s"),
+    "Throughput": (">=", 20, "≥ 20 posts/min"),
+    "Data transferred per profile": ("<=", 25, "≤ 25 MB"),
+}
 
 
-def _at_most(value: float | None, target: float) -> bool | None:
-    return None if value is None else value <= target
+def _kpi(category: str, name: str, value: float | None, display: str) -> Kpi:
+    if name not in TARGETS:
+        return Kpi(category, name, value, display)
+    operator, threshold, label = TARGETS[name]
+    if value is None:
+        passed = None
+    else:
+        passed = value >= threshold if operator == ">=" else value <= threshold
+    return Kpi(category, name, value, display, label, passed)
+
+
+def _seconds(value: float | None) -> str:
+    return "n/a" if value is None else f"{value:.1f} s"
+
+
+def _number(value: float | None, unit: str = "", digits: int = 1) -> str:
+    return "n/a" if value is None else f"{value:,.{digits}f}{unit}"
 
 
 def compute_kpis(runs: list[CaseRun]) -> list[Kpi]:
@@ -174,172 +201,67 @@ def compute_kpis(runs: list[CaseRun]) -> list[Kpi]:
     results = [run.result for run in done]
     stats = [result["meta"]["stats"] for result in results]
     posts = [post for result in results for post in result["posts"]]
+    checks = [ok for run in done for values in run.checks.values() for ok in values]
+    media = [ok for run in done for ok in run.media]
+    counts = [completeness(result) for result in results]
+    filled = sum(done_fields for done_fields, _ in counts)
+    required = sum(total for _, total in counts)
+    unique = sum(len({post["shortcode"] for post in result["posts"]}) for result in results)
+    latencies = [run.wall_seconds for run in done]
+    requests = sum(s["requests"] for s in stats)
+    blocked = sum(s["blocked_requests"] for s in stats)
+    megabytes = sum(s["bytes_received"] for s in stats) / 1_000_000
 
     success = ratio(len(done), len(expected_ok))
     blocks = ratio(sum(run.outcome in BLOCK_OUTCOMES for run in live), len(live))
     classified = ratio(sum(run.outcome == run.expected for run in negative), len(negative))
     retries = ratio(sum(s["navigation_retries"] for s in stats), len(stats))
-
     schema_ok = ratio(sum(not run.schema_errors for run in done), len(done))
-    filled = sum(completeness(result)[0] for result in results)
-    required = sum(completeness(result)[1] for result in results)
-    checks = [ok for run in done for values in run.checks.values() for ok in values]
-    media = [ok for run in done for ok in run.media]
-    unique = sum(len({p["shortcode"] for p in result["posts"]}) for result in results)
-
+    fill_rate = ratio(filled, required)
+    accuracy = ratio(sum(checks), len(checks))
+    media_ok = ratio(sum(media), len(media))
+    duplicates = ratio(len(posts) - unique, len(posts))
     visible = ratio(len(posts), sum(visible_post_target(result) for result in results))
     timeline = ratio(len(posts), sum(result.get("post_count") or 0 for result in results))
-
-    latencies = [run.wall_seconds for run in done]
     p50, p95 = percentile(latencies, 50), percentile(latencies, 95)
-    total_seconds = sum(latencies)
-    throughput = ratio(len(posts) * 60, total_seconds)
-    requests = ratio(sum(s["requests"] for s in stats), len(stats))
-    megabytes = sum(s["bytes_received"] for s in stats) / 1_000_000
+    throughput = ratio(len(posts) * 60, sum(latencies))
+    per_profile = ratio(requests, len(stats))
     mb_per_profile = ratio(megabytes, len(stats))
     mb_per_1k_posts = ratio(megabytes * 1000, len(posts))
-    blocked = sum(s["blocked_requests"] for s in stats)
-    avoided = ratio(blocked, blocked + sum(s["requests"] for s in stats))
+    avoided = ratio(blocked, blocked + requests)
 
-    def seconds(value: float | None) -> str:
-        return "n/a" if value is None else f"{value:.1f} s"
-
-    def number(value: float | None, unit: str = "", digits: int = 1) -> str:
-        return "n/a" if value is None else f"{value:,.{digits}f}{unit}"
-
-    rows: list[tuple[str, str, float | None, str, str, Callable[[], bool | None]]] = [
-        (
-            "Reliability",
-            "Success rate",
-            success,
-            _pct(success),
-            "≥ 95%",
-            lambda: _at_least(success, 0.95),
-        ),
-        (
-            "Reliability",
-            "Block / rate-limit rate",
-            blocks,
-            _pct(blocks),
-            "≤ 5%",
-            lambda: _at_most(blocks, 0.05),
-        ),
-        (
-            "Reliability",
-            "Error classification accuracy",
-            classified,
-            _pct(classified),
-            "100%",
-            lambda: _at_least(classified, 1.0),
-        ),
-        (
-            "Reliability",
-            "Navigation retries per profile",
-            retries,
-            number(retries, "", 2),
-            "≤ 1",
-            lambda: _at_most(retries, 1),
-        ),
-        (
-            "Data quality",
-            "Schema conformance",
-            schema_ok,
-            _pct(schema_ok),
-            "100%",
-            lambda: _at_least(schema_ok, 1.0),
-        ),
-        (
-            "Data quality",
-            "Field completeness (fill rate)",
-            ratio(filled, required),
-            _pct(ratio(filled, required)),
-            "≥ 98%",
-            lambda: _at_least(ratio(filled, required), 0.98),
-        ),
-        (
-            "Data quality",
-            "Accuracy vs. independent source",
-            ratio(sum(checks), len(checks)),
-            _pct(ratio(sum(checks), len(checks))),
-            "≥ 95%",
-            lambda: _at_least(ratio(sum(checks), len(checks)), 0.95),
-        ),
-        (
-            "Data quality",
-            "Media URL validity",
-            ratio(sum(media), len(media)),
-            _pct(ratio(sum(media), len(media))),
-            "≥ 98%",
-            lambda: _at_least(ratio(sum(media), len(media)), 0.98),
-        ),
-        (
-            "Data quality",
-            "Duplicate rate",
-            ratio(len(posts) - unique, len(posts)),
-            _pct(ratio(len(posts) - unique, len(posts))),
-            "0%",
-            lambda: _at_most(ratio(len(posts) - unique, len(posts)), 0),
-        ),
-        (
-            "Coverage",
-            "Coverage of posts visible to the session",
-            visible,
-            _pct(visible),
-            "≥ 95%",
-            lambda: _at_least(visible, 0.95),
-        ),
-        ("Coverage", "Coverage of full timeline", timeline, _pct(timeline), "–", lambda: None),
-        ("Performance", "Latency per profile, p50", p50, seconds(p50), "–", lambda: None),
-        (
-            "Performance",
-            "Latency per profile, p95",
-            p95,
-            seconds(p95),
-            "≤ 60 s",
-            lambda: _at_most(p95, 60),
-        ),
-        (
-            "Performance",
-            "Throughput",
-            throughput,
-            number(throughput, " posts/min"),
-            "≥ 20 posts/min",
-            lambda: _at_least(throughput, 20),
-        ),
-        (
-            "Efficiency",
-            "Requests per profile",
-            requests,
-            number(requests, "", 0),
-            "–",
-            lambda: None,
-        ),
-        (
+    return [
+        _kpi("Reliability", "Success rate", success, _pct(success)),
+        _kpi("Reliability", "Block / rate-limit rate", blocks, _pct(blocks)),
+        _kpi("Reliability", "Error classification accuracy", classified, _pct(classified)),
+        _kpi("Reliability", "Navigation retries per profile", retries, _number(retries, "", 2)),
+        _kpi("Data quality", "Schema conformance", schema_ok, _pct(schema_ok)),
+        _kpi("Data quality", "Field completeness (fill rate)", fill_rate, _pct(fill_rate)),
+        _kpi("Data quality", "Accuracy vs. independent source", accuracy, _pct(accuracy)),
+        _kpi("Data quality", "Media URL validity", media_ok, _pct(media_ok)),
+        _kpi("Data quality", "Duplicate rate", duplicates, _pct(duplicates)),
+        _kpi("Coverage", "Coverage of posts visible to the session", visible, _pct(visible)),
+        _kpi("Coverage", "Coverage of full timeline", timeline, _pct(timeline)),
+        _kpi("Performance", "Latency per profile, p50", p50, _seconds(p50)),
+        _kpi("Performance", "Latency per profile, p95", p95, _seconds(p95)),
+        _kpi("Performance", "Throughput", throughput, _number(throughput, " posts/min")),
+        _kpi("Efficiency", "Requests per profile", per_profile, _number(per_profile, "", 0)),
+        _kpi(
             "Efficiency",
             "Data transferred per profile",
             mb_per_profile,
-            number(mb_per_profile, " MB"),
-            "≤ 25 MB",
-            lambda: _at_most(mb_per_profile, 25),
+            _number(mb_per_profile, " MB"),
         ),
-        (
+        _kpi(
             "Efficiency",
             "Data transferred per 1,000 posts",
             mb_per_1k_posts,
-            number(mb_per_1k_posts, " MB", 0),
-            "–",
-            lambda: None,
+            _number(mb_per_1k_posts, " MB", 0),
         ),
-        (
+        _kpi(
             "Efficiency",
             "Heavy requests avoided (images, video, fonts)",
             avoided,
             _pct(avoided),
-            "–",
-            lambda: None,
         ),
-    ]
-    return [
-        Kpi(category, name, value, display, target, check())
-        for category, name, value, display, target, check in rows
     ]

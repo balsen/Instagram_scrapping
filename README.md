@@ -13,7 +13,7 @@ For this test I wanted a self-contained solution with no paid services or API ke
 
 ## Quick start
 
-Requires Python 3.10+.
+Requires Python 3.10 or newer. The test suite runs on 3.12 and 3.14.
 
 ```bash
 python -m venv .venv
@@ -108,8 +108,9 @@ Conventions:
 ## Extraction approach
 
 ```text
- form / CLI ─▶ job queue ─▶ Playwright (Chromium)
-                               │
+ web form ─▶ job queue ─┐
+                        ├─▶ Playwright (Chromium)
+ CLI ───────────────────┘      │
           ┌────────────────────┼─────────────────────────┐
           ▼                    ▼                         ▼
   embedded <script> JSON   GraphQL / API responses   post pages /p/<code>/
@@ -128,7 +129,7 @@ Conventions:
 3. **Paginate by scrolling.** A response listener captures the GraphQL/API calls the page makes as it loads more posts. Scrolling stops when the feed reports no next page, after several scrolls with no new posts, or at `--max-posts`.
 4. **Fill in missing fields.** For logged-out visitors, the profile grid leaves out timestamps and counts. For each post still missing them, the scraper opens its `/p/<shortcode>/` page (two at a time) and merges in the full record. Those pages only fill in known posts; they never add new ones.
 5. **Normalize several formats.** `scraper/parser.py` handles legacy GraphQL (`edge_*`), v1/`xdt_api` (`image_versions2`, `carousel_media`) and logged-out `XIGPolaris*` nodes. It picks the highest-resolution image, takes the numeric media ID from `pk`, and recognizes hidden like counts.
-6. **Keep only the profile's own posts.** Payloads also contain suggested and related posts from other accounts, which are dropped by owner. Duplicates are merged by shortcode, which stays the same across formats.
+6. **Keep only the profile's own posts.** Everything in the profile's timeline is kept, including collaborations led by a partner account. Suggested and related posts from other accounts are dropped. Duplicates are merged by shortcode, which stays the same across formats.
 7. **Fallbacks.** OpenGraph tags and the page title fill any profile fields the JSON didn't provide.
 
 ## Project structure
@@ -173,6 +174,9 @@ All settings are optional environment variables.
 | `IG_NAV_TIMEOUT_MS` / `IG_NAV_RETRIES` | `30000` / `3` | Page-load timeout and retries (exponential backoff) |
 | `IG_PROXY` | – | e.g. `http://user:pass@host:port` |
 | `IG_HEADLESS` | `true` | Set `false` to watch the browser |
+| `IG_BLOCK_MEDIA` | `true` | Skip downloading images, video and fonts |
+| `IG_USER_AGENT` | desktop Chrome | Browser user agent |
+| `IG_BASE_URL` | `https://www.instagram.com` | Target origin (the tests point it at a local server) |
 | `IG_MAX_CONCURRENCY` | `2` | Parallel scrapes in the web app |
 | `OUTPUT_DIR`, `LOG_LEVEL`, `HOST`, `PORT` | `output`, `INFO`, `127.0.0.1`, `5000` | Web app settings |
 
@@ -189,13 +193,13 @@ The session file holds auth cookies. It is created with `0600` permissions and e
 
 ```bash
 pip install -r requirements-dev.txt
-pytest                      # 107 tests
+pytest                      # 108 tests
 pytest -m integration       # only the end-to-end browser tests
 ruff check . && ruff format --check .
 ```
 
 - **Unit tests** run the parser and collector against fixtures shaped like each payload format Instagram serves.
-- **End-to-end tests** run the real scraper in Chromium against a **local fake Instagram**: a server-rendered profile, a GraphQL request on scroll, post pages, a 404, a soft 404 and a login redirect. They cover the whole browser flow without depending on Instagram or the network.
+- **End-to-end tests** run the real scraper in Chromium against a **local fake Instagram**: a server-rendered profile, a GraphQL request on scroll, post pages, a private profile, a 404, a soft 404 and a login redirect. They cover the whole browser flow without depending on Instagram or the network.
 - **Web tests** cover the Flask app: form and JSON API, job lifecycle, downloads, path traversal, and errors that must not leak internals.
 - **Benchmark tests** cover the KPI math, the tolerances and the schema itself.
 
@@ -233,7 +237,7 @@ Latest run: 5 live profiles (@natgeo, @nasa, @instagram, @nike, @cristiano) and 
 ## Limitations
 
 - **Logged-out visitors see only the latest ~12 posts.** Instagram shows anonymous visitors that many and then requires login to load more. The scraper then returns what it collected with `meta.complete: false` and logs a warning. Pass a logged-in session (`IG_STORAGE_STATE`) to collect the full history.
-- **Private profiles** return profile metadata only.
+- **Private profiles** return profile metadata with an empty `posts` list. This is covered by the end-to-end tests but not yet by the live benchmark.
 - **Instagram can block, rate-limit or change its formats at any time.** Expect occasional maintenance, or use a data provider for production (see above).
 - **No bypassing.** The scraper does not solve CAPTCHAs, rotate identities or get around access controls. Use it in line with Instagram's terms and applicable law.
 - **Web app job state lives in memory.** Run a single process. To scale out, move jobs to a real queue such as RQ or Celery.

@@ -1,6 +1,7 @@
 import asyncio
 import json
 import threading
+from dataclasses import replace
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
@@ -76,6 +77,25 @@ class FakeInstagram(BaseHTTPRequestHandler):
         if path == "/removed/":
             title = "<title>Profile isn't available &bull; Instagram</title>"
             return self.send(200, f"<html><head>{title}</head><body>Log in</body></html>")
+        if path == "/secret/":
+            profile = {
+                "require": [
+                    {
+                        "data": {
+                            "xig_user_by_username": {
+                                "pk": "4004",
+                                "username": "secret",
+                                "full_name": "Private Person",
+                                "biography": "",
+                                "is_private": True,
+                                "follower_count": 42,
+                                "following_count": 7,
+                            }
+                        }
+                    }
+                ]
+            }
+            return self.send(200, f"<html><head>{json_script(profile)}</head><body></body></html>")
         if path == "/empty/":
             return self.send(200, "<html><head><title>Instagram</title></head><body></body></html>")
         return self.send(404, "<html><body>Not found</body></html>")
@@ -108,7 +128,7 @@ def config(fake_instagram):
     )
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def require_chromium():
     async def probe():
         from playwright.async_api import async_playwright
@@ -157,10 +177,18 @@ def test_full_scrape(config):
 
 
 def test_max_posts(config):
-    from dataclasses import replace
-
     result = asyncio.run(InstagramScraper(replace(config, max_posts=2)).scrape("testuser"))
     assert [p.shortcode for p in result.posts] == ["EEE555", "FFF666"]
+
+
+def test_private_profile_returns_metadata_without_posts(config):
+    result = asyncio.run(InstagramScraper(config).scrape("secret")).to_dict()
+    assert result["is_private"] is True
+    assert result["full_name"] == "Private Person"
+    assert (result["followers"], result["following"]) == (42, 7)
+    assert result["bio"] == ""
+    assert result["posts"] == []
+    assert result["meta"]["complete"] is False
 
 
 def test_missing_profile(config):
