@@ -6,9 +6,16 @@ Enter an Instagram username in a web form, or pass it on the command line, and g
 - **Posts:** ID, shortcode, timestamp, caption, like count, comment count, image URL (or the first item of a carousel), video thumbnail
 
 > [!IMPORTANT]
-> **About "all posts":** Instagram shows logged-out visitors only a profile's **newest 12 posts**, then asks them to log in. By default the scraper returns those 12, with every required field filled, and marks the result `"complete": false`. A profile with 500 posts will therefore return 12.
+> **About "all posts":** I ran the scraper without logging in, and Instagram shows logged-out visitors only a profile's **newest 12 posts**. By default the scraper returns those 12, with every required field filled, and marks the result `"complete": false`. A profile with 500 posts will therefore return 12.
 >
-> To get the full history, the scraper can use a logged-in session (`python -m scraper login`, then `IG_STORAGE_STATE`; see [Logged-in sessions](#logged-in-sessions)). The pagination code behind it is covered by the end-to-end tests, but **I haven't yet run it against a real Instagram account**. All the live results below come from logged-out runs.
+> Getting all posts requires logging in with an Instagram account:
+>
+> ```bash
+> python -m scraper login                                    # log in once in the browser window that opens
+> IG_STORAGE_STATE=ig_state.json python -m scraper scrape natgeo
+> ```
+>
+> The scraper supports this, and the `login` command itself has been checked, but **I haven't tested collecting the full history while logged in**. All the live results below come from logged-out runs.
 
 ## Why Playwright and not a data provider?
 
