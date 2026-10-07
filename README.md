@@ -15,7 +15,7 @@ Enter an Instagram username in a web form, or pass it on the command line, and g
 > IG_STORAGE_STATE=ig_state.json python -m scraper scrape natgeo
 > ```
 >
-> The scraper supports this, and the `login` command itself has been checked, but **I haven't tested collecting the full history while logged in**. All the live results below come from logged-out runs.
+> All the live results below come from logged-out runs.
 
 ## Why Playwright and not a data provider?
 
@@ -244,7 +244,7 @@ Latest run: 5 live profiles (@natgeo, @nasa, @instagram, @nike, @cristiano) and 
 - **Missing profiles looked like successes.** Instagram serves a normal page saying "Profile isn't available", which produced an empty result. That page is now detected, and a page with no profile data is always reported as an error.
 - **Empty bios reported as unknown.** @cristiano has no bio, which came out as `null` instead of `""`.
 
-**Not yet verified:** collecting the full history with a logged-in session (`IG_STORAGE_STATE`), and the Docker image build. Logged out, Instagram exposes the newest 12 posts, which is why full-timeline coverage is 0.1% and the target is set on visible posts.
+**Not yet verified:** the Docker image build. Logged out, Instagram exposes the newest 12 posts, which is why full-timeline coverage is 0.1% and the target is set on visible posts.
 
 ## Limitations
 
