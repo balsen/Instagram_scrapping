@@ -5,6 +5,11 @@ Enter an Instagram username in a web form, or pass it on the command line, and g
 - **Profile:** full name, follower count, following count, bio
 - **Posts:** ID, shortcode, timestamp, caption, like count, comment count, image URL (or the first item of a carousel), video thumbnail
 
+> [!IMPORTANT]
+> **About "all posts":** Instagram shows logged-out visitors only a profile's **newest 12 posts**, then asks them to log in. By default the scraper returns those 12, with every required field filled, and marks the result `"complete": false`. A profile with 500 posts will therefore return 12.
+>
+> To get the full history, the scraper can use a logged-in session (`python -m scraper login`, then `IG_STORAGE_STATE`; see [Logged-in sessions](#logged-in-sessions)). The pagination code behind it is covered by the end-to-end tests, but **I haven't yet run it against a real Instagram account**. All the live results below come from logged-out runs.
+
 ## Why Playwright and not a data provider?
 
 In production I would build this on a **third-party data provider** (for example Apify or Bright Data), or on the official Instagram Graph API for accounts we own. Those services handle proxies, rate limits, login walls and Instagram's frequent frontend changes, and they come with an SLA.
@@ -28,7 +33,7 @@ playwright install chromium
 python app.py
 ```
 
-Open http://127.0.0.1:5000 and enter a username, `@handle` or profile URL. The scrape runs in the background. The page shows live progress, a summary and the JSON, plus a **Download JSON** button. Files are saved to `output/<username>_<UTC timestamp>.json`.
+Open http://127.0.0.1:8000 and enter a username, `@handle` or profile URL. The scrape runs in the background. The page shows live progress, a summary and the JSON, plus a **Download JSON** button. Files are saved to `output/<username>_<UTC timestamp>.json`.
 
 ### Command line
 
@@ -178,7 +183,7 @@ All settings are optional environment variables.
 | `IG_USER_AGENT` | desktop Chrome | Browser user agent |
 | `IG_BASE_URL` | `https://www.instagram.com` | Target origin (the tests point it at a local server) |
 | `IG_MAX_CONCURRENCY` | `2` | Parallel scrapes in the web app |
-| `OUTPUT_DIR`, `LOG_LEVEL`, `HOST`, `PORT` | `output`, `INFO`, `127.0.0.1`, `5000` | Web app settings |
+| `OUTPUT_DIR`, `LOG_LEVEL`, `HOST`, `PORT` | `output`, `INFO`, `127.0.0.1`, `8000` | Web app settings |
 
 ### Logged-in sessions
 
